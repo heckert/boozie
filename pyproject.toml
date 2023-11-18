@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "boozie"
+version = "0.1.0"
+description = "A dash app outlining the crucial role of metadata in training ML models."
+authors = ["Heinz Eckert <heinz_eckert@hotmail.com>"]
+readme = "README.md"
+include = ["boozie/data/*.csv"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pandas = "^2.1.3"
+dash = "^2.14.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
