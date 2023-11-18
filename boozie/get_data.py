@@ -42,4 +42,4 @@ if __name__ == "__main__":
 
     df = load_wine()
     output_path = Path(__file__).parent / "data" / "wine.csv"
-    df.to_csv(output_path, index=False, sep=";")
+    df.to_csv(output_path, index=False, sep=",")
