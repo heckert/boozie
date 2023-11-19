@@ -1,0 +1,9 @@
+# For sample extraction
+random_state: 42
+
+samples:
+  Schmidt: 9
+  Penfolds: 6
+  Antinori: 5
+  Vega Sicilia: 4
+  S-Budget: 3
