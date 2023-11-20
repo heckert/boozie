@@ -1,63 +1,87 @@
 from dataclasses import dataclass
 from pathlib import Path
 
-import dash
-from dash import dcc, html
-from dash.dependencies import Input, Output, State
-import plotly.express as px
+import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
+import plotly.express as px
 
-from boozie.ml.model import ModelTrainer
+from sklearn.pipeline import Pipeline
+
+from ml.model import ModelTrainer
 
 
 path = Path(__file__).parent
-
 df = pd.read_csv(path / "data" / "ml.csv")
 
-app = dash.Dash(__name__)
+if 'results' not in st.session_state:
+    st.session_state['results'] = []
 
-app.layout = html.Div([
-    html.H1("Machine Learning Model Trainer"),
-    dcc.Dropdown(
-        id='column-selector',
-        options=[{'label': col, 'value': col} for col in df.columns[:-1]],
-        multi=True,
-        value=df.columns[:5].tolist()  # Default to first 5 columns
-    ),
-    html.Button('Train Model', id='train-button', n_clicks=0),
-    dcc.Graph(id='accuracy-bar-plot')
-])
+
+# Streamlit app
+def main():
+    st.title("Wine Quality Predictor")
+
+    # Allow the user to select up to 5 features
+    features = st.multiselect("Select features", list(df.columns[:-1]), default=list(df.columns)[:5])
+
+    if len(features) > 5:
+        st.error("Please select no more than 5 features.")
+        return
+
+    # Button to train the model
+    if st.button("Train Model"):
+        # Train and evaluate the model
+        train_and_evaluate_model(features)
+
+    # Display results
+    update_plot()
+
+    # Reset button
+    if st.button("Reset"):
+        reset_results()
 
 
 @dataclass
 class TrainingResult:
-    name: str
     mse: float
+    model: Pipeline
+    features: list
 
 
-def train_model(df):
-    trainer = ModelTrainer(df, target="quality")
+def train_and_evaluate_model(features):
+    trainer = ModelTrainer(df[features], df["quality"])
     trainer.train()
 
-    return TrainingResult(trainer.name, trainer.evaluate())
+    result = TrainingResult(trainer.evaluate(), trainer.model, features)
+
+    st.session_state['results'].append(result)
 
 
-results = []
+def update_plot():
 
-@app.callback(
-    Output('accuracy-bar-plot', 'figure'),
-    [Input('train-button', 'n_clicks')],
-    [State('column-selector', 'value')]
-)
-def update_bar_plot(n_clicks, selected_columns):
+    df = pd.DataFrame(st.session_state['results'])
 
-    if n_clicks > 0:
-        results.append(train_model(df[selected_columns + ["quality"]]))
-        data = pd.DataFrame(results)
-        figure = px.bar(data, x='name', y='mse', title='Mean Squared Errors')
-        return figure
-    return {}
+    plt.figure(figsize=(10, 6))
+
+    plt.xlabel('Model Run')
+    plt.ylabel('Mean Squared Error')
+    plt.title('Model Performance Over Runs')
+
+    if len(df) > 0:
+        plt.bar(df.index, df.mse, color='blue')
+        plt.xticks(df.index, [f'Run {i+1}' for i in df.index])
+    else:
+        plt.xticks([], [])
+
+    # Display the plot in the Streamlit app
+    st.pyplot(plt)
 
 
-if __name__ == '__main__':
-    app.run_server(debug=True)
+def reset_results():
+    st.session_state['results'] = []
+    st.rerun()
+    
+
+if __name__ == "__main__":
+    main()

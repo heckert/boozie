@@ -11,34 +11,27 @@ from sklearn.metrics import mean_squared_error
 
 class ModelTrainer:
     def __init__(self,
-                 df: pd.DataFrame,
-                 target: str,
+                 features: pd.DataFrame,
+                 target: pd.Series | pd.DataFrame, *,
                  test_size: float = .3,
                  random_state: int = 42) -> None:
 
-        self.df = df
-        self.name = ", ".join(df.columns)
+        self.features = features
         self.target = target
+        
         self.test_size = test_size
         self.random_state = random_state
 
         (self.X_train, self.X_test,
-         self.y_train, self.y_test) = self._train_test_split()
-
-        self.model = None
-
-    def _train_test_split(self) -> Tuple:
-
-        X = self.df.copy()
-        y = X.pop(self.target)
-
-        return train_test_split(
-            X,
-            y,
+         self.y_train, self.y_test) = train_test_split(
+            features,
+            target,
             test_size=self.test_size,
             random_state=self.random_state,
-            stratify=y
+            stratify=target
         )
+
+        self.model = None
 
     def _get_hyperopt_grid(self) -> Pipeline:
 
