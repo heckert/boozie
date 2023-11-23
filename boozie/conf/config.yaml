@@ -1,9 +1,16 @@
 # For sample extraction
-random_state: 42
+random_state: 27
+
+transform_quality_to_stars: True
+target: stars  # stars or quality
 
 samples:
-  Schmidt: 9
-  Penfolds: 6
-  Antinori: 5
-  Vega Sicilia: 4
-  S-Budget: 3
+  Schmidt: 5
+  Penfolds: 4
+  Antinori: 3
+  Vega Sicilia: 2
+  S-Budget: 1
+
+max_features: 12
+
+include_features_in_output: False
