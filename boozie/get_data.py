@@ -7,10 +7,16 @@ from pathlib import Path
 from typing import Tuple
 
 import pandas as pd
+
+from imblearn.over_sampling import RandomOverSampler
 from omegaconf import OmegaConf
 
 
-def load_wine(transform_quality_to_stars: bool = True) -> pd.DataFrame:
+def load_wine(transform_quality_to_stars: bool = True,
+              run_oversampling: bool = True,
+              random_state: int = 42) -> pd.DataFrame:
+
+    TARGET = "quality"
 
     url = "https://archive.ics.uci.edu/static/public/186/wine+quality.zip"
 
@@ -25,18 +31,22 @@ def load_wine(transform_quality_to_stars: bool = True) -> pd.DataFrame:
             zip_file.extractall(tmpdirname)
             zip_file.close()
 
-            #red = pd.read_csv(
-            #    Path(tmpdirname) / "winequality-red.csv", sep=";"
-            #)
+            red = pd.read_csv(
+                Path(tmpdirname) / "winequality-red.csv", sep=";"
+            )
             white = pd.read_csv(
                 Path(tmpdirname) / "winequality-white.csv", sep=";"
             )
 
-        df = pd.concat([white], ignore_index=True)
+        df = pd.concat([red, white], ignore_index=True)
         if transform_quality_to_stars:
-            df = (df.assign(stars=lambda df: transform_to_star_score(df["quality"]))
-                    .drop("quality", axis=1)
+            df = (df.assign(stars=lambda df: transform_to_star_score(df[TARGET]))
+                    .drop(TARGET, axis=1)
             )
+            TARGET = "stars"
+
+        if run_oversampling:
+            df = oversample(df, target=TARGET, random_state=random_state)
 
     else:
         response.raise_for_status()
@@ -53,6 +63,13 @@ def transform_to_star_score(scores: pd.Series) -> pd.Series:
     result[scores > 7] = 5
 
     return result
+
+
+def oversample(df: pd.DataFrame, target: str, random_state: int = 42) -> pd.DataFrame:
+    ros = RandomOverSampler(random_state=random_state)
+    X = df.copy()
+    y = X.pop(target)
+    return pd.concat(ros.fit_resample(X, y), axis=1)
 
 
 def extract_samples(
@@ -78,7 +95,10 @@ def main() -> None:
 
     cfg = OmegaConf.load(file_path / "conf" / "config.yaml")
 
-    df = load_wine()
+    df = load_wine(transform_quality_to_stars=cfg.transform_quality_to_stars,
+                   run_oversampling=cfg.run_oversampling,
+                   random_state=cfg.random_state)
+    
     samples, df = extract_samples(df,
                                   score_name=cfg.target,
                                   samples=cfg.samples, 
