@@ -1,6 +1,20 @@
 transform_quality_to_stars: True
 run_oversampling: True
 random_state: 27
+
+features:
+- fixed acidity
+- volatile acidity
+- citric acid
+- residual sugar
+- chlorides
+- free sulfur dioxide
+- total sulfur dioxide
+- density
+- pH
+- sulphates
+- alcohol
+
 target: stars  # stars or quality
 
 samples:
@@ -10,6 +24,7 @@ samples:
   Vega Sicilia: 2
   S-Budget: 1
 
-max_features: 12
+max_features: 4
+max_training_runs: 5
 decimals: 1
 include_features_in_output: False

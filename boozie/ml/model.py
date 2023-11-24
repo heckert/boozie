@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Tuple
 
 import pandas as pd
@@ -11,24 +12,26 @@ from sklearn.metrics import mean_squared_error
 
 class ModelTrainer:
     def __init__(self,
-                 features: pd.DataFrame,
-                 target: pd.Series | pd.DataFrame, *,
+                 X: pd.DataFrame,
+                 y: pd.Series | pd.DataFrame, *,
                  test_size: float = .3,
                  random_state: int = 42) -> None:
 
-        self.features = features
-        self.target = target
+        self.X = X
+        self.y = y
         
+        self.features = X.columns
+
         self.test_size = test_size
         self.random_state = random_state
 
         (self.X_train, self.X_test,
          self.y_train, self.y_test) = train_test_split(
-            features,
-            target,
+            X,
+            y,
             test_size=self.test_size,
             random_state=self.random_state,
-            stratify=target
+            stratify=y
         )
 
         self.model = None
@@ -91,3 +94,18 @@ class ModelTrainer:
     def evaluate(self) -> float:
         y_test_pred = self.model.predict(self.X_test)
         return mean_squared_error(self.y_test, y_test_pred)
+
+
+@dataclass
+class TrainingResult:
+    mse: float
+    model: Pipeline
+    features: list
+
+
+def train_and_evaluate_model(X: pd.DataFrame, y: pd.Series) -> TrainingResult:
+    trainer = ModelTrainer(X, y)
+    trainer.train()
+
+    return TrainingResult(trainer.evaluate(), trainer.model, trainer.features)
+
