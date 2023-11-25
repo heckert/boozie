@@ -4,16 +4,24 @@ random_state: 27
 
 features:
 - fixed acidity
-- volatile acidity
-- citric acid
-- residual sugar
-- chlorides
-- free sulfur dioxide
+- opacity
 - total sulfur dioxide
+#- residual sugar
+- price
+- sediment volume
+#- age
+- magnesium oxide
+#- total potassium
 - density
-- pH
-- sulphates
+- kcal
+- citric acid
 - alcohol
+- production volume
+#- chlorides
+#- sulphates
+#- volatile acidity
+#- residual sugar
+#- ph
 
 target: stars  # stars or quality
 
@@ -24,7 +32,9 @@ samples:
   Vega Sicilia: 2
   S-Budget: 1
 
-max_features: 4
-max_training_runs: 5
+max_features: 3
+max_training_runs: 9
 decimals: 1
 include_features_in_output: False
+add_fake_features: True
+show_metadata: True

@@ -1,10 +1,10 @@
 [tool.poetry]
 name = "boozie"
 version = "0.1.0"
-description = "A dash app outlining the crucial role of metadata in training ML models."
+description = "A streamlit app outlining the crucial role of metadata in training ML models."
 authors = ["Heinz Eckert <heinz_eckert@hotmail.com>"]
 readme = "README.md"
-include = ["boozie/data/*.csv"]
+include = ["boozie/data/*.csv", "boozie/data/*.yaml"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -16,8 +16,11 @@ nbformat = "^5.9.2"
 streamlit = "^1.28.2"
 matplotlib = "^3.8.2"
 imbalanced-learn = "^0.11.0"
+ruff = "^0.1.6"
+pytest = "^7.4.3"
 
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
