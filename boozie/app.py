@@ -13,10 +13,6 @@ from sklearn.pipeline import Pipeline
 from boozie.ml.model import train_and_evaluate_model
 
 
-# TODO:
-# Generate metadata
-# Visualize metadata
-
 # Set up module level variables
 path = Path(__file__).parent
 cfg = OmegaConf.load(path / "conf" / "config.yaml")
