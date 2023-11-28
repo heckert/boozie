@@ -3,9 +3,10 @@ import yaml
 from pathlib import Path
 from typing import Tuple
 
-import streamlit as st
-import pandas as pd
 import matplotlib.pyplot as plt
+import pandas as pd
+import streamlit as st
+from streamlit_autorefresh import st_autorefresh
 
 from omegaconf import OmegaConf
 from sklearn.pipeline import Pipeline
@@ -36,6 +37,11 @@ if "training_runs" not in st.session_state:
 
 
 def main():
+    # Attempting to solve autorefresh issue on GCP
+    # https://discuss.streamlit.io/t/how-to-stop-manage-autorefresh/27970/3
+    # Refresh hourly, hopefully to stop refreshes every few minutes.
+    st_autorefresh(3.6e6, key="fizzbuzzcounter")
+
     st.title("🍷 Wine Quality Predictor")
 
     st.header("🔍 Step 0: Understand the data")

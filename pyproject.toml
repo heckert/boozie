@@ -18,6 +18,7 @@ matplotlib = "^3.8.2"
 imbalanced-learn = "^0.11.0"
 ruff = "^0.1.6"
 pytest = "^7.4.3"
+streamlit-autorefresh = "^1.0.1"
 
 
 [build-system]
